@@ -1,0 +1,33 @@
+{
+    "features": [
+        "distrito",
+        "latitude",
+        "longitude",
+        "adaptado_movilidad_reducida",
+        "aire_acondicionado",
+        "antiguedad",
+        "armarios_empotrados",
+        "ascensor",
+        "balcon",
+        "banos",
+        "calefaccion",
+        "chimenea",
+        "cocina_equipada",
+        "conservacion",
+        "exterior",
+        "garaje",
+        "habitaciones",
+        "jardin",
+        "piscina",
+        "puerta_blindada",
+        "sistema_seguridad",
+        "superficie_construida",
+        "terraza",
+        "trastero",
+        "vidrios_dobles",
+        "planta_numerica",
+        "amueblado_False",
+        "amueblado_True",
+        "amueblado_nan"
+    ]
+}
