@@ -22,6 +22,17 @@ scikit-learn>=1.4.0,<2.0.0  # Avoids potential breaking changes when scikit-lear
 lightgbm>=4.3.0             # High-performance gradient boosting framework for classification
 optuna>=3.6.0               # For hyperparameter optimization
 
+pandas
+plotly
+matplotlib
+folium
+streamlit
+streamlit-folium
+scikit-learn
+lightgbm
+joblib
+
+
 # Entity Relationship Diagrams
 graphviz>=0.20.1
 
