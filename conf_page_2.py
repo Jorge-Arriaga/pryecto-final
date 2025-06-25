@@ -160,22 +160,19 @@ def main():
         show_main_page()
     elif f['section']=='Comparativa de pisos':
         st.title('Mapa de pisos en Madrid')
-        columnas_comparar = st.sidebar.multiselect("Selecciona columnas para radar", 
-                                            ['price_eur', 'superficie_construida', 'num_habitaciones', 'num_banos'])
-
-        barrios_comparar = st.sidebar.multiselect("Selecciona barrios para radar",
-                                          options=filtro['barrio'].unique())
     elif f['section']=='Exploratory Data Analysis':
         if filtro.empty:
             st.warning('No hay datos para mostrar.')
     elif f['section']=='Predictivo':
         st.title("Predicción de precio de vivienda")
-        st.info("Formulario e inferencia aquí…")
+        
 
 
-    # Sección Comparativa de pisos
+# ---------------------------
+# COMPARATIVA DE PISOS
+# ---------------------------
     if f['section'] == 'Comparativa de pisos':
-
+        st.title('')
         tipo_operacion = st.radio('Tipo de operación', ['Venta', 'Alquiler'], horizontal=True)
 
         st.subheader('Pisos que coinciden con tu búsqueda')
@@ -222,12 +219,26 @@ def main():
                 ).add_to(marker_cluster)
         folium_static(m, width=800, height=600)
 
-        # Comparativa Radar
-        st.subheader("Comparativa de características (Radar)")
+        st.subheader("")
 
-        variables = ['price_eur', 'habitaciones', 'superficie_construida']
-        etiquetas = ['Precio (€)', 'Habitaciones', 'Superficie (m²)']
+        # Selección dinámica de columnas para comparar
+        columnas_disponibles = ['price_eur', 'superficie_construida', 'habitaciones', 'banos']  # Usar nombres correctos según df
+        columnas_comparar = st.multiselect("Selecciona columnas para radar", columnas_disponibles, default=columnas_disponibles[:3])
 
+        if not columnas_comparar:
+            st.warning("Por favor selecciona al menos una columna para comparar.")
+            st.stop()
+
+        # Mapear etiquetas para las columnas (puedes personalizar más)
+        etiquetas_map = {
+            'price_eur': 'Precio (€)',
+            'superficie_construida': 'Superficie (m²)',
+            'habitaciones': 'Habitaciones',
+            'banos': 'Baños'
+        }
+        etiquetas = [etiquetas_map.get(col, col) for col in columnas_comparar]
+
+        # Selección de filas para comparar (tu lógica original)
         if seleccion:
             comparacion_df = filtro.loc[seleccion]
         elif len(filtro) >= 3:
@@ -240,19 +251,22 @@ def main():
             st.warning("No hay pisos disponibles para comparar.")
             st.stop()
 
-        # Normalización
+        # Normalización de las columnas seleccionadas
         scaler = MinMaxScaler()
-        valores_normalizados = scaler.fit_transform(comparacion_df[variables])
+        valores_normalizados = scaler.fit_transform(comparacion_df[columnas_comparar])
 
-        # Radar Plot
-        fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
-        angulos = [n / float(len(variables)) * 2 * pi for n in range(len(variables))]
+        # Preparar ángulos para radar
+        num_vars = len(columnas_comparar)
+        angulos = [n / float(num_vars) * 2 * pi for n in range(num_vars)]
         angulos += angulos[:1]
+
+        # Plot radar
+        fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
 
         for i, row in comparacion_df.iterrows():
             valores = valores_normalizados[comparacion_df.index.get_loc(i)].tolist()
             valores += valores[:1]
-            ax.plot(angulos, valores, label=row['Resumen'], linewidth=2)
+            ax.plot(angulos, valores, label=row.get('Resumen', str(i)), linewidth=2)  # 'Resumen' o índice como label
             ax.fill(angulos, valores, alpha=0.1)
 
         ax.set_xticks(angulos[:-1])
@@ -263,9 +277,12 @@ def main():
 
         st.pyplot(fig)
 
-# Sección Exploratory Data Analysis
+
+# ---------------------------
+# SECCIÓN EDA
+# ---------------------------
     elif f['section'] == 'Exploratory Data Analysis':
-        st.title('Exploratory Data Analysis (EDA)')
+        st.title('')
 
         if filtro.empty:
             st.warning('No hay datos para mostrar gráficos.')
@@ -324,75 +341,73 @@ def main():
                 st.plotly_chart(fig9, use_container_width=True, key="eda_fig9")
 
 
-    # Sección Predictivo
-    elif f['section'] == 'Predictivo':
-        st.title("Predicción de precio de vivienda")
 
-        target_encoding = {
-            'Arganzuela': 6.215710e+05,
-            'Barajas': 7.248500e+05,
-            'Carabanchel': 2.538475e+05,
-            'Centro': 1.150327e+06,
-            'Chamartín': 1.629871e+06,
-            'Chamberí': 1.742006e+06,
-            'Ciudad Lineal': 4.874101e+05,
-            'Fuencarral-El Pardo': 9.830185e+05,
-            'Hortaleza': 9.752401e+05,
-            'Latina': 2.787340e+05,
-            'Moncloa-Aravaca': 1.832144e+06,
-            'Moratalaz': 3.339613e+05,
-            'Puente de Vallecas': 2.345914e+05,
-            'Retiro': 1.823641e+06,
-            'Salamanca': 2.192351e+06,
-            'San Blas': 4.230341e+05,
-            'Tetuán': 6.405608e+05,
-            'Usera': 2.584598e+05,
-            'Vicálvaro': 3.879491e+05,
-            'Villa de Vallecas': 3.057489e+05,
-            'Villaverde': 2.113346e+05
-        }
+# ---------------------------
+# SECCIÓN PREDICTIVO
+# ---------------------------
+    elif f['section'] == 'Predictivo':
+        st.title("")
 
         bin_map = {'Sí': 1, 'No': 0}
 
-        model_file = 'modelo_sale_entrenado.pkl' if f['tipo_operacion'] == 'venta' else 'modelo_renta_entrenado.pkl'
-        classifier_file = 'sale_property_classifier.pkl' if f['tipo_operacion'] == 'venta' else 'rental_property_classifier.pkl'
+        # Selección de archivos según tipo de operación
+        if f['tipo_operacion'] == 'venta':
+            model_file = 'modelo_rf_regressor.pkl'
+            classifier_file = 'sale_property_classifier.pkl'
+        else:
+            model_file = 'modelo_renta_entrenado.pkl'
+            classifier_file = 'rental_property_classifier.pkl'
 
-        # Cargar modelos
+        # Cargar modelos y encoders
         try:
-            
-            with open('sale_property_classifier.pkl', 'rb') as f:
-                classifier = pickle.load(f)  
+            # Cargar modelo de clúster
+            with open(classifier_file, 'rb') as f_clf:
+                classifier = pickle.load(f_clf)
 
-            with open('modelo_sale_entrenado.pkl', 'rb') as f:
-                model = pickle.load(f)
+            # Cargar encoders
+            with open('le_distrito.pkl', 'rb') as f_le_dist:
+                le_distrito = pickle.load(f_le_dist)
+
+            with open('le_antiguedad.pkl', 'rb') as f_le_ant:
+                le_antiguedad = pickle.load(f_le_ant)
+
+            # Cargar modelo de precio
+            with open(model_file, 'rb') as f_reg:
+                reg_data = pickle.load(f_reg)
+                model = reg_data['model']
 
         except Exception as e:
-            st.error(f"No se pudo cargar el modelo: {e}")
+            st.error(f"No se pudo cargar el modelo o encoder: {e}")
             st.stop()
+
+            # Mapeo manual de antigüedad 
+        map_antiguedad = {
+            0: "Obra nueva",
+            1: "Menos de 10 años",
+            2: "Entre 10 y 20 años",
+            3: "Entre 20 y 50 años",
+            4: "Más de 50 años"
+        }
+        inv_map_antiguedad = {v: k for k, v in map_antiguedad.items()}
 
         with st.form('form_prediccion'):
             st.markdown("Introduce las características de tu inmueble:")
 
-            superficie_construida = st.number_input('superficie_construida (m²)', min_value=10, max_value=1000, value=70)
+            superficie_construida = st.number_input('Superficie construida (m²)', min_value=10, max_value=1000, value=70)
             baños = st.number_input('Número de baños', min_value=0, max_value=10, value=1)
 
-            distrito = st.selectbox('Selecciona el distrito', sorted(target_encoding.keys()))
-            distrito_encoded = target_encoding[distrito]
-
+            distrito = st.selectbox('Selecciona el distrito', sorted(le_distrito.classes_))
             habitaciones = st.number_input('Número de habitaciones', min_value=1, max_value=8, value=2)
 
             planta_opciones = ['Bajo', '1ª', '2ª', '3ª', '4ª', '5ª', '6ª', '7ª', '8ª', '9ª', '10ª o más']
             planta_numerica_str = st.selectbox('Planta numérica', planta_opciones)
-            # Mapear planta a número
-            if planta_numerica_str == 'Bajo':
-                planta_numerica = 0
-            elif planta_numerica_str == '10ª o más':
-                planta_numerica = 10
-            else:
-                planta_numerica = int(planta_numerica_str[:-1])  # Quita la última letra 'ª' y convierte a int
+            planta_numerica = 0 if planta_numerica_str == 'Bajo' else 10 if planta_numerica_str == '10ª o más' else int(planta_numerica_str[:-1])
 
             exterior = st.selectbox('Exterior', ['Sí', 'No'])
-            antiguedad = st.selectbox('Antigüedad', sorted(cat_levels.get('antigüedad', [])) if 'antigüedad' in cat_levels else ['Desconocida'])
+
+            antiguedad_opciones = list(map_antiguedad.values())
+            antiguedad = st.selectbox('Antigüedad', antiguedad_opciones)
+
             terraza = st.selectbox('Terraza', ['Sí', 'No'])
             garaje = st.selectbox('Garaje', ['Sí', 'No'])
             calefaccion = st.selectbox('Calefacción', ['Sí', 'No'])
@@ -400,45 +415,41 @@ def main():
             submitted_pred = st.form_submit_button('Predecir precio')
 
         if submitted_pred:
-            input_data = pd.DataFrame([{
-                "superficie_construida": superficie_construida,
-                "banos": baños,
-                "distrito_encoded": distrito_encoded,
-                "habitaciones": habitaciones,
-                "planta_numerica": planta_numerica,
-                "exterior": bin_map[exterior],
-                "antiguedad": antiguedad,
-                "terraza": bin_map[terraza],
-                "garaje": bin_map[garaje],
-                "calefaccion": bin_map[calefaccion]
-            }])
-
-            for col in input_data.columns:
-                if col in cat_levels:
-                    input_data[col] = input_data[col].astype('category')
-                    input_data[col] = input_data[col].cat.set_categories(cat_levels[col])
-
             try:
+                distrito_encoded = le_distrito.transform([distrito])[0]
+                antiguedad_encoded = inv_map_antiguedad.get(antiguedad, -1)
+
+                input_data = pd.DataFrame([{
+                    "superficie_construida": superficie_construida,
+                    "banos": baños,
+                    "distrito_encoded": distrito_encoded,
+                    "habitaciones": habitaciones,
+                    "planta_numerica": planta_numerica,
+                    "exterior": bin_map[exterior],
+                    "antiguedad_encoded": antiguedad_encoded,
+                    "terraza": bin_map[terraza],
+                    "garaje": bin_map[garaje],
+                    "calefaccion": bin_map[calefaccion]
+                }])
+
                 cluster = classifier.predict(input_data)[0]
                 cluster_label_map = {
-                    0: "Piso Señorial Clásico",
-                    1: "Apartamento Estándar",
-                    2: "Propiedad Singular (Outlier)",
-                    3: "Lujo Moderno (Full Equip)",
-                    4: "Premium Reformado"
+                    0: "",
+                    1: "",
+                    2: "",
+                    3: "",
+                    4: ""
                 }
                 cluster_label = cluster_label_map.get(cluster, "Desconocido")
-                st.info(f"🏷️ Esta propiedad pertenece al clúster: **{cluster} - {cluster_label}**")
-            except Exception as e:
-                st.warning(f"No se pudo predecir el clúster: {e}")
+                st.info(f" Esta propiedad pertenece al grupo: **{cluster} - {cluster_label}**")
 
-            try:
                 precio_pred = model.predict(input_data)[0]
                 st.success(f"💶 Precio estimado: **{precio_pred:,.2f} €**")
-            except Exception as e:
-                st.error(f"No se pudo predecir el precio: {e}")
 
-            # Tabla de clústeres de ventas
+            except Exception as e:
+                st.error(f"Error durante la predicción: {e}")
+
+        # Tabla de clústeres de ventas
         clusters_venta = pd.DataFrame({
             "Etiqueta": [
                 "Piso Señorial Clásico",
@@ -474,13 +485,14 @@ def main():
             ]
         })
 
-        with st.expander("Leyenda de clústeres"):
+        with st.expander("Leyenda de cases de inmuebles(clusters)"):
             st.markdown("### Clústeres de Propiedades en Venta")
             st.dataframe(clusters_venta, use_container_width=True)
 
             st.markdown("### Clústeres de Propiedades en Alquiler")
             st.dataframe(clusters_alquiler, use_container_width=True)
-            
+
+
 
 if __name__ == '__main__':
     main()
