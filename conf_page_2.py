@@ -361,7 +361,7 @@ def main():
         try:
             
             with open('sale_property_classifier.pkl', 'rb') as f:
-                classifier = pickle.load(f)  # debe ser un modelo, no un dict
+                classifier = pickle.load(f)  
 
             with open('modelo_sale_entrenado.pkl', 'rb') as f:
                 model = pickle.load(f)
