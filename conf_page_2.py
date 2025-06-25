@@ -2,6 +2,7 @@ import os
 import pandas as pd
 import plotly.express as px
 import matplotlib.pyplot as plt
+import plotly.graph_objects as go
 import folium
 from folium.plugins import MarkerCluster
 from streamlit_folium import folium_static
@@ -173,7 +174,7 @@ def main():
 # ---------------------------
     if f['section'] == 'Comparativa de pisos':
         st.title('')
-        tipo_operacion = st.radio('Tipo de operación', ['Venta', 'Alquiler'], horizontal=True)
+        
 
         st.subheader('Pisos que coinciden con tu búsqueda')
         st.markdown(f'**{len(filtro)} pisos encontrados**')
@@ -222,14 +223,14 @@ def main():
         st.subheader("")
 
         # Selección dinámica de columnas para comparar
-        columnas_disponibles = ['price_eur', 'superficie_construida', 'habitaciones', 'banos']  # Usar nombres correctos según df
+        columnas_disponibles = ['price_eur', 'superficie_construida', 'habitaciones', 'banos']  
         columnas_comparar = st.multiselect("Selecciona columnas para radar", columnas_disponibles, default=columnas_disponibles[:3])
 
         if not columnas_comparar:
             st.warning("Por favor selecciona al menos una columna para comparar.")
             st.stop()
 
-        # Mapear etiquetas para las columnas (puedes personalizar más)
+        # Mapear etiquetas para las columnas 
         etiquetas_map = {
             'price_eur': 'Precio (€)',
             'superficie_construida': 'Superficie (m²)',
@@ -238,7 +239,7 @@ def main():
         }
         etiquetas = [etiquetas_map.get(col, col) for col in columnas_comparar]
 
-        # Selección de filas para comparar (tu lógica original)
+        # Selección de filas para comparar 
         if seleccion:
             comparacion_df = filtro.loc[seleccion]
         elif len(filtro) >= 3:
@@ -255,27 +256,33 @@ def main():
         scaler = MinMaxScaler()
         valores_normalizados = scaler.fit_transform(comparacion_df[columnas_comparar])
 
-        # Preparar ángulos para radar
-        num_vars = len(columnas_comparar)
-        angulos = [n / float(num_vars) * 2 * pi for n in range(num_vars)]
-        angulos += angulos[:1]
+        # Preparar etiquetas para cerrar el radar 
+        etiquetas_cerradas = etiquetas + [etiquetas[0]]
 
-        # Plot radar
-        fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
+        fig = go.Figure()
 
-        for i, row in comparacion_df.iterrows():
-            valores = valores_normalizados[comparacion_df.index.get_loc(i)].tolist()
-            valores += valores[:1]
-            ax.plot(angulos, valores, label=row.get('Resumen', str(i)), linewidth=2)  # 'Resumen' o índice como label
-            ax.fill(angulos, valores, alpha=0.1)
+        for i, row in enumerate(comparacion_df.itertuples()):
+            valores = list(valores_normalizados[i])
+            valores_cerrados = valores + [valores[0]]  # cerrar ciclo
 
-        ax.set_xticks(angulos[:-1])
-        ax.set_xticklabels(etiquetas)
-        ax.set_yticklabels([])
-        ax.set_title("Radar de características normalizadas", fontsize=13)
-        ax.legend(loc='upper right', bbox_to_anchor=(1.3, 1.1))
+            fig.add_trace(go.Scatterpolar(
+                r=valores_cerrados,
+                theta=etiquetas_cerradas,
+                fill='toself',
+                name=str(getattr(row, 'Resumen', getattr(row, 'Index', i)))  # usa 'Resumen' o índice
+            ))
 
-        st.pyplot(fig)
+        fig.update_layout(
+            polar=dict(
+                radialaxis=dict(
+                    visible=True,
+                    range=[0, 1]
+                )),
+            showlegend=True,
+            title="Radar de características normalizadas"
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
 
 
 # ---------------------------
