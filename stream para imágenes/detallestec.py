@@ -21,7 +21,7 @@ with st.expander("Descripción"):
     st.markdown("Observamos que en dos de los 4 clústeres finales el mejor modelo para entrenar es el RandomForest.")
 
 # Imagen 2: Mejores parámetros
-imagen_resultados_2 = Image.open("Tabla_Marta_1.png")
+imagen_resultados_2 = Image.open("Tabla.png")
 alto_redimensionado_2 = int(ancho_deseado * imagen_resultados_2.height / imagen_resultados_2.width)
 imagen_resultados_2 = imagen_resultados_2.resize((ancho_deseado, alto_redimensionado_2))
 
