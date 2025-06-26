@@ -11,7 +11,7 @@ En esta sección se presentan resultados detallados de los modelos utilizados en
 
 # Imagen 1: Comparativa de modelos
 st.subheader("📊 Comparativa de Modelos por Clúster")
-imagen_resultados = Image.open("Tabla_Marta_1.png")
+imagen_resultados = Image.open("Tabla_Marta_1.jpg")
 ancho_deseado = 600
 alto_redimensionado = int(ancho_deseado * imagen_resultados.height / imagen_resultados.width)
 imagen_resultados = imagen_resultados.resize((ancho_deseado, alto_redimensionado))
@@ -21,7 +21,7 @@ with st.expander("Descripción"):
     st.markdown("Observamos que en dos de los 4 clústeres finales el mejor modelo para entrenar es el RandomForest.")
 
 # Imagen 2: Mejores parámetros
-imagen_resultados_2 = Image.open("Tabla_Marta_1.png")
+imagen_resultados_2 = Image.open("Tabla_Marta_2.jpg")
 alto_redimensionado_2 = int(ancho_deseado * imagen_resultados_2.height / imagen_resultados_2.width)
 imagen_resultados_2 = imagen_resultados_2.resize((ancho_deseado, alto_redimensionado_2))
 
