@@ -117,7 +117,9 @@ Proyecto realizado como parte del curso de *Machine Learning aplicado a Datos In
             st.markdown('<a href="https://github.com/HFrutos/streamlit-house-price-prediction" target="_blank">📄 Ver documentación completa →</a>', 
             unsafe_allow_html=True
             )
-
+            st.markdown('<a href="https://pryecto-final-vu9gcvproubhfxgm5mq9mb.streamlit.app" target="_blank">📄 Ver documentación completa →</a>', 
+            unsafe_allow_html=True
+            )
 # ---------------------------
 # FUNCIÓN PRINCIPAL
 # ---------------------------
