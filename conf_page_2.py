@@ -114,10 +114,10 @@ Proyecto realizado como parte del curso de *Machine Learning aplicado a Datos In
 ✉️ Para más información, contacta a: pftttttt@example.com
             """, unsafe_allow_html=True)
         with st.expander("Documentación técnica"):
-            st.markdown('<a href="https://github.com/HFrutos/streamlit-house-price-prediction" target="_blank">📄 Ver documentación completa →</a>', 
+            st.markdown('<"Enlace a Github" a href="https://github.com/HFrutos/streamlit-house-price-prediction" target="_blank">📄 Ver documentación completa →</a>', 
             unsafe_allow_html=True
             )
-            st.markdown('<a href="https://pryecto-final-vu9gcvproubhfxgm5mq9mb.streamlit.app" target="_blank">📄 Ver documentación completa →</a>', 
+            st.markdown('<"Métricas y comparativas de Modelos" a href="https://pryecto-final-vu9gcvproubhfxgm5mq9mb.streamlit.app" target="_blank">📄 Ver documentación completa →</a>', 
             unsafe_allow_html=True
             )
 # ---------------------------
