@@ -81,7 +81,7 @@ def filtrar_propiedades(df: pd.DataFrame, f: dict) -> pd.DataFrame:
 def show_main_page():
     col1, _, col_big = st.columns([2, 0.5, 5.5])
     with col1:
-        st.image("orangutan.png", caption="¡Selecciona los parámetros en el sidebar! →", width=325)
+        st.image("orangutan.png", caption="¡Selecciona los parámetros en el sidebar!", width=325)
     with col_big:
         st.title("Predicción de Precios de Viviendas")
         st.markdown(
@@ -114,12 +114,13 @@ Proyecto realizado como parte del curso de *Machine Learning aplicado a Datos In
 ✉️ Para más información, contacta a: pftttttt@example.com
             """, unsafe_allow_html=True)
         with st.expander("Documentación técnica"):
-            st.markdown('<"Enlace a Github" -- "https://github.com/HFrutos/streamlit-house-price-prediction" </a>', 
+            st.markdown('<"Enlace a Github" a href="https://github.com/HFrutos/streamlit-house-price-prediction" target="_blank">📄 Ver documentación completa →</a>', 
             unsafe_allow_html=True
             )
-            st.markdown('<"Métricas y comparativas de Modelos" --"https://pryecto-final-vu9gcvproubhfxgm5mq9mb.streamlit.app" </a>', 
+            st.markdown('<"Métricas y comparativas de Modelos" a href="https://pryecto-final-vu9gcvproubhfxgm5mq9mb.streamlit.app" target="_blank">📄 Ver do</a>', 
             unsafe_allow_html=True
             )
+
 # ---------------------------
 # FUNCIÓN PRINCIPAL
 # ---------------------------
@@ -297,15 +298,26 @@ def main():
             st.warning('No hay datos para mostrar gráficos.')
         else:
             st.subheader("Distribución de precios")
+            with st.expander("¿Qué está mostrando el gráfico?"):
+                st.markdown('En este gráfico podrás ver la cantidad de propiedades que hay en cada rango de precios para las propiedades que coincidan con el filtro de la izquierda', 
+            unsafe_allow_html=True)
+                
             fig1 = px.histogram(filtro, x='price_eur', nbins=50, title='Distribución del precio en euros')
             st.plotly_chart(fig1, use_container_width=True, key="eda_fig1")
 
             st.subheader("Precio promedio por barrio")
+            with st.expander("¿Qué está mostrando el gráfico?"):
+                st.markdown('En este gráfico podrás ver el precio medio de las propiedades seleccionadas en el filtro de la izquierda', 
+            unsafe_allow_html=True)
             precio_barrio = filtro.groupby('barrio')['price_eur'].mean().sort_values()
             fig2 = px.bar(precio_barrio, title='Precio promedio por barrio')
             st.plotly_chart(fig2, use_container_width=True, key="eda_fig2")
 
             # Mostrar tabla resumen por barrio
+            with st.expander("¿Qué está mostrando el gráfico?"):
+                st.markdown('Aquí tienes una tabla comparativa para las propiedades que coincidan con el filtro de la izquierda', 
+            unsafe_allow_html=True)
+                
             resumen_barrio = filtro.groupby('barrio').agg({
                 'price_eur': ['mean', 'median', 'count'],
                 'superficie_construida': 'mean'
@@ -315,37 +327,59 @@ def main():
 
             if 'antigüedad' in filtro.columns:
                 st.subheader("Boxplot de precio según antigüedad")
+                with st.expander("¿Qué está mostrando el gráfico?"):
+                    st.markdown('En este gráfico podrás ver la relación entre la antiguedad de los inmuebles y el precio para las propiedades que coincidan con el filtro de la izquierda', 
+                unsafe_allow_html=True)
+                    
                 fig3 = px.box(filtro, x='antigüedad', y='price_eur', title='Precio según antigüedad')
                 st.plotly_chart(fig3, use_container_width=True, key="eda_fig3")
 
             if 'superficie_construida' in filtro.columns:
                 st.subheader("Distribución de superficie_construida")
+                with st.expander("¿Qué está mostrando el gráfico?"):
+                    st.markdown('En este gráfico podrás ver la superficie construida para las propiedades que coincidan con el filtro de la izquierda', 
+                unsafe_allow_html=True)
                 fig4 = px.histogram(filtro, x='superficie_construida', nbins=50, title='superficie_construida')
                 st.plotly_chart(fig4, use_container_width=True, key="eda_fig4")
 
             if 'barrio' in filtro.columns and 'superficie_construida' in filtro.columns:
                 st.subheader("superficie_construida promedio por barrio")
+                with st.expander("¿Qué está mostrando el gráfico?"):
+                    st.markdown('En este gráfico podrás el promedio de superficie construida para las propiedades que coincidan con el filtro de la izquierda', 
+                unsafe_allow_html=True)
                 superficie_barrio = filtro.groupby('barrio')['superficie_construida'].mean().sort_values()
                 fig5 = px.bar(superficie_barrio, title='superficie_construida promedio por barrio')
                 st.plotly_chart(fig5, use_container_width=True, key="eda_fig5")
 
             if 'num_habitaciones' in filtro.columns:
                 st.subheader("Precio según número de habitaciones")
+                with st.expander("¿Qué está mostrando el gráfico?"):
+                    st.markdown('En este gráfico podrás ver el precio medio según las habitaciones elegidas en el filtro de la izquierda', 
+                unsafe_allow_html=True)
                 fig6 = px.box(filtro, x='num_habitaciones', y='price_eur', title='Precio por número de habitaciones')
                 st.plotly_chart(fig6, use_container_width=True, key="eda_fig6")
 
             if 'num_banos' in filtro.columns:
                 st.subheader("Distribución de número de baños")
+                with st.expander("¿Qué está mostrando el gráfico?"):
+                    st.markdown('En este gráfico podrás ver el precio el número de baños para las propiedades que coincidan con el filtro de la izquierda', 
+                unsafe_allow_html=True)
                 fig7 = px.histogram(filtro, x='num_banos', nbins=10, title='Distribución de baños')
                 st.plotly_chart(fig7, use_container_width=True, key="eda_fig7")
 
             if 'planta' in filtro.columns:
                 st.subheader("Precio por planta")
+                with st.expander("¿Qué está mostrando el gráfico?"):
+                    st.markdown('En este gráfico podrás ver el precio medio según la planta en el barrio elegido en el filtro de la izquierda', 
+                unsafe_allow_html=True)
                 fig8 = px.box(filtro, x='planta', y='price_eur', title='Precio según planta')
                 st.plotly_chart(fig8, use_container_width=True, key="eda_fig8")
 
             if 'estado' in filtro.columns:
                 st.subheader("Distribución del estado de las propiedades")
+                with st.expander("¿Qué está mostrando el gráfico?"):
+                    st.markdown('En este gráfico podrás ver la antiguedad de las propiedades para el barrio elegido en el filtro de la izquierda', 
+                unsafe_allow_html=True)               
                 fig9 = px.histogram(filtro, x='estado', title='Estado de las propiedades')
                 st.plotly_chart(fig9, use_container_width=True, key="eda_fig9")
 
@@ -501,6 +535,16 @@ def main():
             st.markdown("### Clústeres de Propiedades en Alquiler")
             st.dataframe(clusters_alquiler, use_container_width=True)
 
+        with st.expander("¿Qué son los clústeres de propiedades? (clases)"):
+            st.markdown("""
+        Los clústeres son grupos de propiedades con características similares. Elegidos así por la inteligencia artificial que predice el precio de tu vivienda. Puede que tu vivienda no se ajuste al 100% al clúster asignado, pero seguro que se asemeja mucho y te dará una idea de cómo son los precios de los demás inmuebles con características parecidas.
+        
+        **¿Cómo se asignan estos clústeres y por qué?**
+        
+        Los clústeres se asignan a través del modelo que, tras un estudio de los datos más relevantes para predecir el precio (feature importance), nos dice las características más comunes entre las propiedades parecidas a la tuya. Por eso alguna característica puede ser algo distinta, pero la mayoría serán correctas.
+        
+        Si tienes interés, podrás estudiar el porqué de estos clústeres y la feature importance en la sección de detalles técnicos de la página principal.
+        """, unsafe_allow_html=True)
 
 
 if __name__ == '__main__':
